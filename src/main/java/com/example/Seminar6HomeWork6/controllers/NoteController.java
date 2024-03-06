@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,65 +22,59 @@ public class NoteController {
 
     /**
      * Метод обработки Get-запроса без параметров по адресу - localhost:8080/notes
-     *
      * @return - список всех заметок
      */
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<List<Note>> getAll() {
         return new ResponseEntity<>(noteService.getAllNotes(), HttpStatus.OK);
     }
 
     /**
-     * Метод обработки Post-запроса с добавлением параметров заметки по адресу - localhost:8080/notes
-     *
+     * Метод обработки Post-запроса (создание новой заметки) с добавлением параметров заметки по адресу - localhost:8080/notes
      * @param note - новая заметка, передается через body
      * @return - новая заметка
      */
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<Note> createNote(@RequestBody Note note) {
+        note.setDateTime(LocalDateTime.now());
         return new ResponseEntity<>(noteService.createNote(note), HttpStatus.CREATED);
     }
 
-
     /**
-     * Метод обработки Get-запроса списка заметок с указанным статусом по адресу - localhost:8080/notes/{id}
-     * @param id - id заметки
+     * Получение заметки по ID
+     * @param id
      * @return
      */
-    @GetMapping("{id}")
-    public ResponseEntity<Note> getNoteById(@PathVariable("id") Long id) {
-        Note note;
+    @GetMapping("/{id}")
+    public ResponseEntity<Note> getNote(@PathVariable("id") Long id) {
+        Note noteById;
         try {
-            note = noteService.getNoteById(id);
-        } catch (RuntimeException e) {
+            noteById = noteService.getNoteById(id);
+        } catch (RuntimeException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Note());
         }
-        return new ResponseEntity<>(note, HttpStatus.OK);
+        return new ResponseEntity<>(noteById, HttpStatus.OK);
     }
 
     /**
-     * Метод обработки Put-запроса на изменение заметки по id
-     *
-     * @param id      - id заметки
-     * @param heading - заголовок заметки
-     * @param content - содержимое заметки
-     * @return - возвращает измененную заметку
+     * Редактирование заметки по id
+     * @param note
+     * @return
      */
-    @PutMapping("{id}")
-    @ResponseBody
-    public ResponseEntity<Note> updateNote(@PathVariable("id") Long id,
-                                           @RequestParam("heading") String heading,
-                                           @RequestParam("content") String content) {
-        return new ResponseEntity<>(noteService.updateNote(id, heading, content), HttpStatus.OK);
+    @PutMapping("/{id}")
+    public ResponseEntity<Note> updateNote(@RequestBody Note note, @PathVariable("id") Long id) {
+        note.setId(id);
+        return new ResponseEntity<>(noteService.updateNote(note), HttpStatus.OK);
     }
 
     /**
      * Метод обработки Delete-запроса на удаление заметки по id по адресу - localhost:8080/notes/{id}
+     *
      * @param id - id заметки
      * @return - Void
      */
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteNote(@PathVariable("id") Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteNote(@PathVariable ("id") Long id) {
         noteService.deleteNote(id);
         return ResponseEntity.ok().build();
     }

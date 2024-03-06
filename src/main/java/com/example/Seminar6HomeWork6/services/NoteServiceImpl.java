@@ -1,16 +1,17 @@
 package com.example.Seminar6HomeWork6.services;
 
+import com.example.Seminar6HomeWork6.aspects.TrackUserAction;
 import com.example.Seminar6HomeWork6.models.Note;
 import com.example.Seminar6HomeWork6.repositories.NoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
-public class NoteServiceImpl implements NoteService {
+public class NoteServiceImpl implements NoteService{
 
     private final NoteRepository noteRepository;
 
@@ -19,6 +20,7 @@ public class NoteServiceImpl implements NoteService {
      * @return - возвращает список заметок
      */
     @Override
+    @TrackUserAction
     public List<Note> getAllNotes() {
         return noteRepository.findAll();
     }
@@ -29,22 +31,22 @@ public class NoteServiceImpl implements NoteService {
      * @return - возвращает нужную заметку
      */
     @Override
+    @TrackUserAction
     public Note getNoteById(Long id) {
         return noteRepository.findById(id).orElseThrow(null);
     }
 
     /**
      * Метод изменения заметки по id
-     * @param id - id заметки
-     * @param heading - заголовок заметки
-     * @param content - содержимое заметки
+     * @param note - id заметки
      * @return - обновленная заметка
      */
     @Override
-    public Note updateNote(Long id, String heading, String content) {
-        Note noteById = getNoteById(id);
-        noteById.setHeading(heading);
-        noteById.setContent(content);
+    @TrackUserAction
+    public Note updateNote(Note note) {
+        Note noteById = getNoteById(note.getId());
+        noteById.setHeading(note.getHeading());
+        noteById.setContent(note.getContent());
         return noteRepository.save(noteById);
     }
 
@@ -54,16 +56,19 @@ public class NoteServiceImpl implements NoteService {
      * @return - возвращает новую сохраненную заметку
      */
     @Override
+    @TrackUserAction
     public Note createNote(Note note) {
-        note.setDateTime(LocalDateTime.now());
+//        note.setDateTime(LocalDateTime.now());
         return noteRepository.save(note);
     }
 
     /**
      * Метод удаления заметки по id
      * @param id - id заметки
+     * @return
      */
     @Override
+    @TrackUserAction
     public void deleteNote(Long id) {
         Note noteById = getNoteById(id);
         noteRepository.delete(noteById);

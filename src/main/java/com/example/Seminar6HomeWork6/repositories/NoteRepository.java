@@ -18,4 +18,5 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      * @return - возвращает заметку
      */
     Optional<Note> findById(Long id);
+
 }

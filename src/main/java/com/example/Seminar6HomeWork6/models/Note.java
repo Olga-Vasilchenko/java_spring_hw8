@@ -17,21 +17,13 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // id заметки
 
-    @Column(name = "heading", nullable = false)
+    @Column(nullable = false)
     private String heading; // заголовок заметки
 
-    @Column(name = "content",nullable = false)
+    @Column(nullable = false)
     private String content; // содержимое заметки
 
-    @Column(name = "dateTime")
+    @Column()
     private LocalDateTime dateTime; // дата создания (автоматически устанавливается при создании заметки)
 
-//    @ManyToOne
-//    @JoinColumn(name = "note_id")
-//    private Note note;
-//
-    public Note(String heading, String content) {
-        this.heading = heading;
-        this.content = content;
-    }
 }
